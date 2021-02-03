@@ -1,0 +1,11 @@
+
+<<< setup
+
+*** ERROR[GENERATE_102]: Index hors bornes pour le tableau "b" : 5.
+*** ERROR[GENERATE_103] at 54:32-61 silva2018_adapt.mod: OPL ne peut pas extraire l'expression : (t >= b[(k+(-1))] && t < b[k])*EC[k].
+*** ERROR[GENERATE_103]: OPL ne peut pas extraire l'expression : sum(k in 1..5) (t >= b[(k+(-1))] && t < b[k])*EC[k].
+*** ERROR[GENERATE_112]: Expression numérique non valide : 0 est 0.
+*** ERROR[GENERATE_118] at 52:33-55:70 silva2018_adapt.mod: Expression d'initialisation non valide pour l'élément de tableau : c#1#1320.
+
+<<< generate
+

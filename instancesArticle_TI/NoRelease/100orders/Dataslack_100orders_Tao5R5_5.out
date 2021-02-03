@@ -1,0 +1,55 @@
+
+<<< setup
+
+
+<<< generate
+
+CPXPARAM_TimeLimit                               3600
+Found incumbent of value 0,000000 after 1,97 sec. (1093,63 ticks)
+Presolve has eliminated 5402068 rows and 6540532 columns...
+Presolve has improved bounds 400 times...
+Aggregator has done 2 substitutions...
+Tried aggregator 2 times.
+MIP Presolve eliminated 5402168 rows and 6545908 columns.
+Aggregator did 2 substitutions.
+Reduced MIP has 75578 rows, 6438790 columns, and 19090039 nonzeros.
+Reduced MIP has 6438788 binaries, 2 generals, 0 SOSs, and 0 indicators.
+Presolve time = 41,77 sec. (28652,98 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 75578 rows, 6438790 columns, and 19090039 nonzeros.
+Reduced MIP has 6438788 binaries, 2 generals, 0 SOSs, and 0 indicators.
+Presolve time = 20,45 sec. (11006,51 ticks)
+Probing time = 25,88 sec. (1170,14 ticks)
+Clique table members: 286.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 8 threads.
+Root relaxation solution time = 3487,02 sec. (1737567,79 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                          656,0730   7,21976e+07              --- 
+      0     0   1,00000e+37     0      656,0730   7,21976e+07       68     --- 
+
+Root node processing (before b&c):
+  Real time             = 3606,45 sec. (1789860,49 ticks)
+Parallel b&c, 8 threads:
+  Real time             =    0,00 sec. (0,00 ticks)
+  Sync time (average)   =    0,00 sec.
+  Wait time (average)   =    0,00 sec.
+                          ------------
+Total (root+branch&cut) = 3606,45 sec. (1789860,49 ticks)
+
+<<< solve
+
+
+OBJECTIVE: 656.073
+RESULTS,656.073046866,3723.995,110044.128203358
+SEQUENCE,0->1->2->3->4->5->6->7->8->9->10->11->12->13->14->15->16->17->18->19->20->21->22->23->24->25->26->27->28->29->30->31->32->34->36->37->38->39->42->43->44->45->46->47->48->50->52->54->56->57->59->60->62->64->66->69->89->95->0
+
+<<< post process
+
+
+<<< done
+

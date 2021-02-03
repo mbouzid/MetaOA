@@ -1,0 +1,74 @@
+
+<<< setup
+
+
+<<< generate
+
+CPXPARAM_TimeLimit                               3600
+Found incumbent of value 0,000000 after 2,92 sec. (1058,83 ticks)
+Presolve has eliminated 5698909 rows and 6823200 columns...
+Presolve has improved bounds 400 times...
+Aggregator has done 1 substitutions...
+Aggregator has done 2 substitutions...
+Aggregator has done 3 substitutions...
+Aggregator has done 4 substitutions...
+Aggregator has done 5 substitutions...
+Aggregator has done 6 substitutions...
+Aggregator has done 7 substitutions...
+Aggregator has done 8 substitutions...
+Aggregator has done 9 substitutions...
+Aggregator has done 10 substitutions...
+Aggregator has done 11 substitutions...
+Aggregator has done 12 substitutions...
+Aggregator has done 13 substitutions...
+Aggregator has done 14 substitutions...
+Aggregator has done 15 substitutions...
+Aggregator has done 16 substitutions...
+Aggregator has done 17 substitutions...
+Aggregator has done 18 substitutions...
+Aggregator has done 19 substitutions...
+Tried aggregator 20 times.
+MIP Presolve eliminated 5699009 rows and 6828618 columns.
+Aggregator did 19 substitutions.
+Reduced MIP has 70935 rows, 5982663 columns, and 17735586 nonzeros.
+Reduced MIP has 5982662 binaries, 1 generals, 0 SOSs, and 0 indicators.
+Presolve time = 1089,80 sec. (362975,01 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 70935 rows, 5982663 columns, and 17735586 nonzeros.
+Reduced MIP has 5982662 binaries, 1 generals, 0 SOSs, and 0 indicators.
+Presolve time = 31,66 sec. (10222,42 ticks)
+Probing fixed 23 vars, tightened 0 bounds.
+Probing time = 26,42 sec. (2488,04 ticks)
+Clique table members: 745039.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 8 threads.
+Root relaxation solution time = 2423,22 sec. (1216864,79 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                          623,1242   6,15700e+07              --- 
+      0     0   1,00000e+37     0      623,1242   6,15700e+07    94776     --- 
+
+Root node processing (before b&c):
+  Real time             = 3605,36 sec. (1603856,41 ticks)
+Parallel b&c, 8 threads:
+  Real time             =    0,00 sec. (0,00 ticks)
+  Sync time (average)   =    0,00 sec.
+  Wait time (average)   =    0,00 sec.
+                          ------------
+Total (root+branch&cut) = 3605,36 sec. (1603856,41 ticks)
+
+<<< solve
+
+
+OBJECTIVE: 623.1242
+RESULTS,623.124158194,3838.328,98807.631793981
+SEQUENCE,0->1->2->3->4->5->6->7->8->9->10->11->12->13->14->15->16->17->18->19->20->21->22->23->24->26->27->28->29->30->31->32->34->35->36->37->39->40->42->45->50->52->54->57->58->59->61->63->64->67->68->70->71->75->77->84->90->0
+
+<<< post process
+
+
+<<< done
+

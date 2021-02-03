@@ -1,0 +1,47 @@
+
+<<< setup
+
+
+<<< generate
+
+CPXPARAM_TimeLimit                               3600
+Found incumbent of value 0,000000 after 3,27 sec. (1191,16 ticks)
+Presolve has eliminated 5405462 rows and 6615528 columns...
+Presolve has improved bounds 400 times...
+Aggregator has done 1 substitutions...
+Aggregator has done 3 substitutions...
+Aggregator has done 4 substitutions...
+Aggregator has done 5 substitutions...
+Aggregator has done 7 substitutions...
+Aggregator has done 8 substitutions...
+Aggregator has done 10 substitutions...
+Aggregator has done 11 substitutions...
+Aggregator has done 13 substitutions...
+Aggregator has done 14 substitutions...
+Tried aggregator 16 times.
+Aggregator has done 15 substitutions...
+MIP Presolve eliminated 5405562 rows and 6620931 columns.
+Aggregator did 15 substitutions.
+Reduced MIP has 84526 rows, 7271554 columns, and 21561486 nonzeros.
+Reduced MIP has 7271553 binaries, 1 generals, 0 SOSs, and 0 indicators.
+Presolve time = 205,50 sec. (135041,60 ticks)
+Presolve has eliminated 0 rows and 0 columns...
+Tried aggregator 1 time.
+Reduced MIP has 84526 rows, 7271554 columns, and 21561486 nonzeros.
+Reduced MIP has 7271553 binaries, 1 generals, 0 SOSs, and 0 indicators.
+Presolve time = 80,13 sec. (25387,42 ticks)
+
+Root node processing (before b&c):
+  Real time             =  351,44 sec. (171117,57 ticks)
+Parallel b&c, 8 threads:
+  Real time             =    0,00 sec. (0,00 ticks)
+  Sync time (average)   =    0,00 sec.
+  Wait time (average)   =    0,00 sec.
+                          ------------
+Total (root+branch&cut) =  351,44 sec. (171117,57 ticks)
+*** FATAL[ENGINE_002]: Exception IBM ILOG CPLEX : CPLEX Error  1001: Out of memory.
+.
+### ENGINE exception: Echec du traitement.
+
+<<< no solution
+
