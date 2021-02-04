@@ -59,6 +59,7 @@ class Island: public std::vector <Solution>
 			while (cpt < nb)
 			{
 				push_back(Solution::genRandom(_id, d));//push_back(Solution::genEmpty(_id,d));
+				//push_back(Solution::genGreedy(_id, d));
 				//push_back(Solution::genEmpty(_id, d));
 				++cpt;
 			}

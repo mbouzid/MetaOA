@@ -420,14 +420,13 @@ Solution Solution::genGreedy(size_t origin, OrderData* dat)
 {
 	//RLR1_i = ei / (pi + saverage, i),
 	//where saverage_i =(s0, i + s1, i + y + sn, i) / (n + 1).
-	double* RLR = (double*)calloc(dat->getN() + 1, sizeof(double));
+	//double* RLR = (double*)calloc(dat->getN() + 1, sizeof(double));
+	std::vector <double> RLR(dat->getN()+1,0.0);
+	std::vector<bool> rejected(dat->getN() + 1, true);
 	Sequence s(dat->getN());
-
-
 
 	for (uint16_t i(1); i <= dat->getN(); ++i)
 	{
-
 		// compute revenue load ratio
 		double savg_i(0.0);
 
@@ -441,16 +440,15 @@ Solution Solution::genGreedy(size_t origin, OrderData* dat)
 
 		RLR[i] = dat->getE(i) / (dat->getP(i) + savg_i);
 		if (RLR[i] > 0.0)
+		{
 			s.append(i);  // add order with positive RLR
-
+		}
 	}
 
-	// sort sequence by increasing RLR
+
+		// sort sequence by increasing RLR
 	std::sort(s.begin(), s.end(), [&RLR](const uint16_t& i, const uint16_t& j) { return RLR[i] <= RLR[j]; });
 
-
-
-	free(RLR);
 
 	return Solution(origin, s, dat);
 }

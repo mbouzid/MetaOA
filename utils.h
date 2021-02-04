@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <random>
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
 namespace utils
@@ -25,6 +26,9 @@ namespace utils
 		CO2IntervalNb,
 		CO2Emissions
 	};
+
+
+
 	std::vector <std::string> tokenize(const std::string& str, const std::string & delims);
 
 	// martinbroadhurst.com

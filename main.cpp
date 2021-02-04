@@ -21,13 +21,14 @@ int main(int argc, char* argv[])
 		
 		OrderData*  dat(OrderData::load(datname));
 		
+
 		std::vector<Island> islands = 
 		{ 	  
 				Island("exchange",Solution::exchange),
 				Island("exchangeRandom",Solution::exchangeRandomly),
 				Island("inversion",Solution::inversion), 
 				Island("swap",Solution::swap),
-//				Island("scramble",Solution::scramble),
+				Island("scramble",Solution::scramble),
 //				Island("randomShuffle",Solution::randomShuffle),
 				Island("add",Solution::add),
 				Island("addRandomly",Solution::addRandomly),

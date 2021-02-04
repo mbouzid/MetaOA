@@ -25,7 +25,7 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 	{
 		std::ostringstream oss;
 
-		//oss << cpt;
+		oss << cpt;
 
 		for (int i(0); i < n; ++i)
 		{
@@ -113,20 +113,36 @@ void Solver::migrationPool(std::map <size_t, std::vector<Solution> > & migrants,
 	{
 		// choice with transition matrix
 		
-		double randNum(rand() / RAND_MAX);
-	//	std::discrete_distribution<> d(_M.at(i).begin(), _M.at(i).end());
-
+		double randNum((double)rand() / (double)RAND_MAX);
+	
 		size_t n(_islands.size());
 		size_t destination(i);
-		for (size_t j(0); j < n; ++j)
+		double cumulProb(_M.at(i).at(0));
+		for (size_t j(1); j < n; ++j)
 		{
-			if ((i!=j) && (randNum < _M.at(i).at(j)))
+			if ((i!=j) && (randNum < cumulProb))
 			{
-				destination = j;
-		
+				destination = j-1;
+				break;
 			}
-		}
-		
+			else
+			{
+				cumulProb += _M.at(i).at(j);
+			}
+		} 
+
+		  /*
+		    static std::random_device srd;
+		   static std::mt19937 smt(srd());
+		   smt.seed(161295);
+		   
+		   */
+		//std::discrete_distribution<> d(_M.at(i).begin(), _M.at(i).end());
+
+		// i : (M[i][0],..., M[i][n])
+
+		//size_t destination(d(srd));
+
 		if (destination != i)
 		{
 			
@@ -232,9 +248,8 @@ void Solver::replacePop(size_t island, double pm, double dr)
 
 void Solver::evolve(size_t island, double pm, double pc, double dr)
 {
+
 	//double fitBefore(_islands.at(island).getMaxFitness());
-	
-	
 	double randomNum((double)rand()/ (double)RAND_MAX);
 	if (randomNum < pc)
 	{
@@ -279,7 +294,6 @@ void Solver::update(size_t island)
 
 
 	utils::normalize(N);
-//	utils::normalize(R);
 
 
 	for (size_t k(0); k < n; ++k)

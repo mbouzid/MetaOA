@@ -1,4 +1,5 @@
 #include "island.h"
+#include "utils.h"
 
 size_t Island::s_id = 0;
 
@@ -11,15 +12,16 @@ void Island::updateStats(Island & island, OrderData* dat)
 
 void Island::apply(Island & island, double pm, OrderData * dat)
 {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-
+	
+	/*thread_local*/ static std::random_device srd;  
+	/*thread_local*/ static std::mt19937 smt(srd());
+	smt.seed(161295);
 	std::bernoulli_distribution d(pm);
 	size_t n(island.size());
 
 	for (size_t i(0); i<n ; ++i)
 	{
-		if (d(gen))
+		if (d(srd))
 		{
 			island._operator(island[i],dat);
 		}
@@ -109,6 +111,24 @@ std::pair<Solution, Solution> Island::select() const
 		select1 = p2;
 	}
 
+	/*size_t p3(rand() % (size())), p4(rand() % size());
+	if (p3 == p4)
+	{
+		p4 = rand() % size();
+	}
+
+
+	size_t select2(1);
+	if (at(p3).getObjectiveValue() > at(p4).getObjectiveValue())
+	{
+		select1 = p3;
+	}
+	else
+	{
+		select1 = p4;
+	} */
+
+
 	return std::make_pair(getBestSol(), at(select1));
 }
 
@@ -125,16 +145,11 @@ void Island::replace(OrderData* dat, double pm, double dr)
 
 	size_t nb(dr*nbIndiv);
 	size_t reste(nbIndiv % nb);
-	std::vector <Solution> toErase;
-	for(size_t k(0); k < nb + reste; ++k)
-	{
-		toErase.push_back(this->operator[](k));
-	}
 
-	for (size_t k(0); k < toErase.size(); ++k)
+	for (size_t k(0); k < nb + reste; ++k)
 	{
 		// erase worst sol
-		std::vector<Solution>::iterator found(std::find(begin(),end(), toErase[k]));
+		std::vector<Solution>::iterator found(std::find(begin(),end(), this->operator[](k)));
 		if (found != end())
 		{
 			erase(found);

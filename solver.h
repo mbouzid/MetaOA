@@ -10,7 +10,9 @@
 
 class Solver
 {
+
 	private:
+
 
 		OrderData* _dat;
 
@@ -53,6 +55,7 @@ class Solver
 			_M(),
 			_improvement()
 		{
+
 			size_t n(_islands.size());
 			for (size_t i(0); i < n ; ++i)
 			{

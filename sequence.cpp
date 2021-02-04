@@ -1,5 +1,5 @@
 #include "sequence.h"
-#include <random>
+#include "utils.h"
 #include <chrono>
 #include <algorithm>
 #include <sstream>
@@ -166,8 +166,10 @@ void Sequence::inversion(size_t a, size_t b)
 
 void Sequence::randomShuffle()
 {
-	std::random_device rd;
-	std::shuffle(_seq.begin(), _seq.end(),rd);
+	/*thread_local*/ static std::random_device srd; 
+	/*thread_local*/ static std::mt19937 smt(srd());
+	smt.seed(161295);
+	std::shuffle(_seq.begin(), _seq.end(),srd);
 }
 
 void Sequence::exchange(uint16_t i, uint16_t x)
