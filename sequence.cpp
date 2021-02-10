@@ -62,7 +62,7 @@ bool Sequence::getAccepted(size_t k) const
 {
 	if (inRange(k))
 	{
-		return _accepted[k];
+		return _accepted.at(k);
 	}
 	else
 	{
@@ -78,7 +78,7 @@ bool Sequence::isAccepted(uint16_t i) const
 		if (found != _seq.cend())
 		{
 			size_t k(*found - 1);
-			return _accepted[k];
+			return _accepted.at(k);
 		}
 		else
 		{
@@ -169,7 +169,7 @@ void Sequence::randomShuffle()
 	/*thread_local*/ static std::random_device srd; 
 	/*thread_local*/ static std::mt19937 smt(srd());
 	smt.seed(161295);
-	std::shuffle(_seq.begin(), _seq.end(),srd);
+	std::shuffle(_seq.begin(), _seq.end(), srd);
 }
 
 void Sequence::exchange(uint16_t i, uint16_t x)
@@ -219,14 +219,14 @@ void Sequence::genRandom(double pAccepted)
 	
 	for (size_t i(1); i <= _n; ++i)
 	{ 
-		double randNum(rand() / RAND_MAX);
+		double randNum((double)rand() / (double)RAND_MAX);
 		if (randNum < pAccepted)
-		{
+		{ 
 			append(i);
 		}
 	}
 
-	//randomShuffle();
+	randomShuffle();
 
 }
 
@@ -308,7 +308,7 @@ uint16_t Sequence::getRandomOrderRejected() const
 	std::vector<uint16_t> rejected;
 	for (size_t k(0); k < _n; ++k)
 	{
-		if (not _accepted[k])
+		if (not _accepted.at(k))
 			rejected.push_back(k+1);
 	}
 
@@ -345,7 +345,7 @@ std::vector<uint16_t> Sequence::getRejectedOrders() const
 	std::vector<uint16_t> rejected;
 	for (size_t k(0); k < _n; ++k)
 	{
-		if (not _accepted[k])
+		if (not _accepted.at(k))
 			rejected.push_back(k + 1);
 	}
 	return rejected;

@@ -95,7 +95,7 @@ std::pair<Solution, Solution> Island::select() const
 {
 	
 	size_t p1(rand()%(size())), p2(rand()% size());
-	if (p1 == p2)
+	while (p1 == p2)
 	{
 		p2 = rand() % size();
 	}
@@ -111,67 +111,113 @@ std::pair<Solution, Solution> Island::select() const
 		select1 = p2;
 	}
 
-	/*size_t p3(rand() % (size())), p4(rand() % size());
-	if (p3 == p4)
+	size_t select2(1);
+	size_t p3(rand() % (size())), p4(rand() % size());
+	while (p3 == p4)
 	{
 		p4 = rand() % size();
 	}
 
 
-	size_t select2(1);
 	if (at(p3).getObjectiveValue() > at(p4).getObjectiveValue())
 	{
-		select1 = p3;
+		select2 = p3;
 	}
 	else
 	{
-		select1 = p4;
-	} */
+		select2 = p4;
+	} 
 
 
-	return std::make_pair(getBestSol(), at(select1));
+	return std::make_pair(at(select1),at(select2));
 }
 
 void Island::replace(OrderData* dat, double pm, double dr)
 {
-	std::pair <Solution, Solution> bestSols(select());
+	std::pair <Solution, Solution> parents(select());
 
-
-	// sort pop by worst sol
-	std::sort(begin(), end(), [](const Solution& s1, const Solution& s2) { return s1.getObjectiveValue() <= s2.getObjectiveValue(); });
-
-	// remove worst solution
 	size_t nbIndiv(size());
 
-	size_t nb(dr*nbIndiv);
+	size_t nb(dr * nbIndiv);
 	size_t reste(nbIndiv % nb);
 
-	for (size_t k(0); k < nb + reste; ++k)
-	{
-		// erase worst sol
-		std::vector<Solution>::iterator found(std::find(begin(),end(), this->operator[](k)));
-		if (found != end())
-		{
-			erase(found);
-		}
-	}
 
 	size_t nbChilds(dr * nbIndiv);
 	for (size_t k(0); k < nbChilds+reste; ++k)
 	{
-		Solution child(Solution::singlePointCrossover(bestSols.first, bestSols.second, dat));
-		
-		double randNum((double)rand()/ (double)RAND_MAX);
-		if (randNum < pm)
+		std::pair<Solution,Solution> child(std::make_pair(Solution::testCrossover(parents.first, parents.second, dat), Solution::singlePointCrossover(parents.second, parents.first, dat)));
+
+		// choisir enfant
+		double randNum1((double)rand() / (double)RAND_MAX);
+		if (randNum1 < 0.5)
 		{
-			_operator(child, dat);
+			Solution children(child.first);
+			double randNum((double)rand()/ (double)RAND_MAX);
+			if (randNum < pm)
+			{
+				_operator(children, dat);
+			}  				
+			
+			push_back(children);
 		}
-		push_back(child);
+		else
+		{
+			Solution children(child.second);
+			double randNum((double)rand() / (double)RAND_MAX);
+			if (randNum < pm)
+			{
+				_operator(children, dat);
+				
+			}
+			
+			push_back(children);
+		}
+
+		
+		
+	}
+
+	// sort pop by worst sol
+	std::sort(begin(), end(), [](const Solution& s1, const Solution& s2) { return s1.getObjectiveValue() <= s2.getObjectiveValue(); });
+
+	Island::iterator it(begin());
+	while (it != end() )
+	{
+		Island::iterator next(std::next(it));
+		while (next != end())
+		{
+			if ( (*it).getObjectiveValue() == (*next).getObjectiveValue())
+			{
+				next = erase(next);
+
+			}
+			else
+			{
+				++next;
+			}
+		}
+		++it;
+	}	 
+	size_t szAfter(size()); 
+
+	if (szAfter > nbIndiv)
+	{
+		size_t nbDiff(szAfter-nbIndiv);
+		//std::cout << nbDiff << std::endl;
+		for (size_t k(0); k < nbDiff; ++k)
+		{
+			// erase worst sol
+			std::vector<Solution>::iterator found(std::find(begin(), end(), this->operator[](k)));
+			if (found != end())
+			{
+				erase(found);
+			}
+		}
 	}
 
 }
 
 std::ostream& operator<<(std::ostream& os, const Island& island)
 {
-	return os << island.size(); /*<< "," <<island.getMaxFitness(); */ //<< "," << island.getAvgFitness();
+	return os <<island.size(); /* << ","  << island.getMaxFitness(); /*; << "," << island.getAvgFitness();	*/
 }

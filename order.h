@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <map>
 
 class OrderData
 {
@@ -27,6 +28,9 @@ class OrderData
 		double* _q;
 
 		double _Tax;
+
+		uint16_t _T;
+		std::map<uint16_t, std::map<size_t,double>> _f;
 				
 
 		// constructor
@@ -47,7 +51,9 @@ class OrderData
 			double* w,
 			double* EC,
 			double* q,
-			double Tax
+			double Tax,
+			size_t T,
+			const std::map<uint16_t, std::map<size_t,double>> & f
 		) :
 			_n(n),
 			_r(r),
@@ -64,7 +70,9 @@ class OrderData
 			_w(w),
 			_EC(EC),
 			_q(q),
-			_Tax(Tax)
+			_Tax(Tax),
+			_T(T),
+			_f(f)
 		{}
 
 		bool inRange_n(size_t idx) const
@@ -100,7 +108,9 @@ class OrderData
 			_w((double*)calloc(_n+1, sizeof(double))),
 			_EC((double*)calloc(_m, sizeof(double))),
 			_q((double*)calloc(_h, sizeof(double))),
-			_Tax(_._Tax)
+			_Tax(_._Tax),
+			_T(_._T),
+			_f(_._f)
 		{
 			std::cout << "OrderData(constOrderData&)" << std::endl;
 			memcpy(_r, _._r, sizeof(uint16_t) * (_n+1));
@@ -126,6 +136,15 @@ class OrderData
 
 		static OrderData* load(const char * datname);
 
+		size_t getT() const
+		{
+			return _T;
+		}
+
+		double getF(uint16_t j, size_t t) const
+		{
+			return _f.at(j).at(t);
+		}
 
 		size_t getN() const
 		{

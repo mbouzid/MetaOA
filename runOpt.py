@@ -9,10 +9,10 @@ assert (len(sys.argv) > 1), "An arguments must be given"
 
 dir = sys.argv[1]
 nbRun = 10
-nbIter = 300
+
 #Initial population	alpha	beta	pm	pc
 
-optExp =[50,0.80,0.01,0.7,0.9]
+optExp =[100,1000,0.85,0.1,0.7,0.9]
 
 
 def list_files_recursive(path):
@@ -35,10 +35,11 @@ nb = len(dats)
 
 k = 1
 popsize = optExp[0]
-alpha = optExp[1]
-beta = optExp[2]
-pm = optExp[3]
-pc = optExp[4]
+nbIter = optExp[1]
+alpha = optExp[2]
+beta = optExp[3]
+pm = optExp[4]
+pc = optExp[5]
 	
 dirExp = "optExp\\"
 if not os.path.exists(dirExp):

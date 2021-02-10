@@ -10,8 +10,12 @@ class Sequence
 	private:
 
 		size_t	_n;
+
+		// sequence
 		std::vector <uint16_t> _seq;
-		bool *	_accepted;
+		
+		// accepted 
+		std::vector<bool> _accepted;
 
  		// insert order i at pos k 
 		std::vector<uint16_t>::iterator insertAt(size_t k, uint16_t i) ;
@@ -36,29 +40,23 @@ class Sequence
 		Sequence(size_t n) :
 			_n(n),
 			_seq(),
-			_accepted((bool*)calloc(_n,sizeof(bool)))
+			_accepted(n,false)
 		{}
 
 
 		Sequence(const Sequence& rhs) :
 			_n(rhs._n),
 			_seq(rhs._seq),
-			_accepted((bool*)calloc(_n,sizeof(bool)))
-		{
-			
-			memcpy(_accepted, rhs._accepted, _n * sizeof(bool));
-		}
+			_accepted(rhs._accepted)
+		{}
 
 		Sequence& operator = (const Sequence& rhs)
 		{
 			if (this != &rhs)
 			{
-			
 				_n = rhs._n;
 				_seq = rhs._seq; 
-				_accepted = (bool*)calloc(_n, sizeof(bool));
-				memcpy(_accepted, rhs._accepted, _n * sizeof(bool));
-			
+				_accepted = rhs._accepted;
 			}
 			return *this;
 		}
@@ -91,9 +89,7 @@ class Sequence
 		void deleteOrder(uint16_t i);
 
 		~Sequence()
-		{
-			delete _accepted;
-		}
+		{}
 
 		// swap between order i and j
 		void swap(uint16_t i, uint16_t j);
@@ -133,6 +129,17 @@ class Sequence
 		uint16_t getLeastProfitableOrder(OrderData * dat) const;
 
 		std::vector<uint16_t>  getRejectedOrders() const;
+
+		size_t getPos(uint16_t i) const
+		{
+			if (inSequence(i))
+			{				
+				std::vector<uint16_t>::const_iterator found(std::find(_seq.cbegin(), _seq.cend(), i));
+				return std::distance(_seq.cbegin(), found);
+
+			}
+		}
+
 
 		bool operator == (const Sequence& rhs) const
 		{

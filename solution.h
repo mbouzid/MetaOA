@@ -14,8 +14,8 @@ class Solution
 		size_t _currentOrigin;
 
 		Sequence _seq;
-		uint16_t * _C;
-		uint16_t* _ST;
+		std::vector<uint16_t> _C;
+		std::vector<uint16_t> _ST;
 
 
 		double _objVal;
@@ -31,8 +31,8 @@ class Solution
 			_prevOrigin(from),
 			_currentOrigin(from),
 			_seq(seq),
-			_C((uint16_t*)calloc(_seq.getN()+1,sizeof(uint16_t))),
-			_ST((uint16_t*)calloc(_seq.getN() + 1, sizeof(uint16_t))),
+			_C(_seq.getN()+1,0),
+			_ST(_seq.getN() + 1,0),
 			_objVal(0.0),
 			_profit(),
 			_tardiness()
@@ -53,14 +53,13 @@ class Solution
 			_prevOrigin(rhs._prevOrigin),
 			_currentOrigin(rhs._currentOrigin),
 			_seq(rhs._seq),
-			_C((uint16_t*)calloc(_seq.getN()+1, sizeof(uint16_t))),
-			_ST((uint16_t*)calloc(_seq.getN() + 1, sizeof(uint16_t))),
+			_C(rhs._C),
+			_ST(rhs._ST),
 			_objVal(rhs._objVal),
 			_profit(rhs._profit),
 			_tardiness(rhs._tardiness)
 		{
-			memcpy(_C, rhs._C, (_seq.getN() + 1) * sizeof(uint16_t));
-			memcpy(_ST, rhs._ST, (_seq.getN() + 1) * sizeof(uint16_t));
+			
 		}
 
 		Solution& operator = (const Solution& rhs)
@@ -70,18 +69,19 @@ class Solution
 				_prevOrigin = rhs._prevOrigin;
 				_currentOrigin = rhs._currentOrigin;
 				_seq = rhs._seq;
-				_C = (uint16_t*)calloc(_seq.getN() + 1, sizeof(uint16_t));
-				memcpy(_C, rhs._C, (_seq.getN() + 1) * sizeof(uint16_t));
-
-				_ST = (uint16_t*)calloc(_seq.getN() + 1, sizeof(uint16_t));
-				memcpy(_ST, rhs._ST, (_seq.getN() + 1) * sizeof(uint16_t));
-
+				_C = rhs._C;
+				_ST = rhs._ST;
 				_objVal = rhs._objVal;
 				_profit = rhs._profit;
 				_tardiness = rhs._tardiness;
 			}
 
 			return (*this);
+		}
+
+		size_t getCurrentOrigin() const
+		{
+			return _currentOrigin;
 		}
 
 		size_t getOrigin() const
@@ -116,6 +116,7 @@ class Solution
 			return _seq;
 		}
 
+
 		uint16_t getOrderAt(size_t k) const
 		{
 			return _seq.at(k);
@@ -125,28 +126,30 @@ class Solution
 		{
 			for (size_t i(0); i <= _seq.getN(); ++i)
 			{
-				os << _C[i] << " ";
+				os << _C.at(i) << " ";
 			}
 			os << std::endl;
 		}
+
+
 
 		
 		// completion time of order i
 		uint16_t getCompletion(uint16_t i) const
 		{
-			return _C[i];
+			return _C.at(i);
 		}
 
 		// completion time of order i
 		uint16_t getStartingTime(uint16_t i) const
 		{
-			return _ST[i];
+			return _ST.at(i);
 		}
 
 
 		uint16_t getStartingTime(size_t i) const
 		{
-			return _ST[i];
+			return _ST.at(i);
 		}
 
 		/* neighbor moves */
@@ -170,9 +173,22 @@ class Solution
 		static void remove(Solution& sol, OrderData * dat);
 
 		static void shift(Solution& sol, OrderData* dat);
+
+		static void opt(Solution& sol, OrderData* dat);
+
+		static void insertAtBestPos(Solution& sol, OrderData* dat);
+
+		static void RISJ(Solution& sol, OrderData* dat);
+
+		static void change(Solution& sol, OrderData* dat);
+
+		static void ATI(Solution& sol, OrderData* dat);
+
 		
 		// recombinaison 
-		static Solution singlePointCrossover(const Solution& p1, const Solution& p2, OrderData * dat) ;
+		static Solution singlePointCrossover(const Solution& p1, const Solution& p2, OrderData* dat);
+		static Solution testCrossover(const Solution& p1, const Solution& p2, OrderData* dat);
+		static Solution testCrossover1(const Solution& p1, const Solution& p2, OrderData* dat);
 
 
 		static void update(Solution& sol, OrderData * dat)
@@ -197,6 +213,10 @@ class Solution
 		// generate greedy	
 		/* TODO */
 		static Solution genGreedy(size_t origin, OrderData* dat);
+		static Solution genGreedy1(size_t origin, OrderData* dat);
+		// J-schedule
+		static Solution genGreedy2(size_t origin, OrderData* dat);
+		static Solution genGreedy3(size_t origin, OrderData* dat);
 
 		bool operator == (const Solution& sol) const
 		{
@@ -204,10 +224,7 @@ class Solution
 		}
 
 		~Solution()
-		{
-			delete (_C);
-			delete (_ST);
-		}
+		{}
 
 		static double getFitness(Solution* sol)
 		{
@@ -247,6 +264,51 @@ class Solution
 
 			return (double)nonTardy / (double)nbOrders;
 		}
+
+		uint16_t getTardiestOrder() const
+		{
+			if (_seq.empty())
+				return 0;
+			// tells % of order non-tardy
+
+			size_t tardy(0);
+			uint16_t tard(_tardiness.at(tardy));
+			size_t nbOrders(_seq.size());
+			for (size_t i(1); i < nbOrders; ++i)
+			{
+				if (_tardiness.at(_seq.at(i)) > tard)
+				{
+					tardy = _seq.at(i);
+					tard = _tardiness.at(tardy);
+				}
+			}
+
+			return tard;
+		 }
+
+		void printSeq() const
+		{
+			std::cout << "0";
+			for (uint16_t i : _seq.getSeq())
+			{
+				std::cout << "->" << i;
+			}
+			std::cout << std::endl;
+
+		}
+
+		std::string toString() const
+		{
+			std::string seq("");
+			for (uint16_t c : _C)
+			{
+				seq += std::to_string(c);
+			}
+
+			return seq;
+		}
+
+
 
 };
 

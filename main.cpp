@@ -20,20 +20,24 @@ int main(int argc, char* argv[])
 		double dr(0.5);
 		
 		OrderData*  dat(OrderData::load(datname));
-		
+	
 
-		std::vector<Island> islands = 
-		{ 	  
+
+		std::vector<Island> islands =
+		{
 				Island("exchange",Solution::exchange),
-				Island("exchangeRandom",Solution::exchangeRandomly),
-				Island("inversion",Solution::inversion), 
+			//	Island("exchangeRandom",Solution::exchangeRandomly),
+				Island("inversion",Solution::inversion),
 				Island("swap",Solution::swap),
-				Island("scramble",Solution::scramble),
-//				Island("randomShuffle",Solution::randomShuffle),
+			//	Island("scramble",Solution::scramble),
 				Island("add",Solution::add),
-				Island("addRandomly",Solution::addRandomly),
+			//	Island("addRandomly",Solution::addRandomly),
 				Island("shift",Solution::shift),
-		//		Island("remove",Solution::remove)
+				//Island("2opt",Solution::opt),
+			//	Island("insertAtBestPos",Solution::insertAtBestPos),
+				Island("RISJ",Solution::RISJ),
+				Island("change",Solution::change),
+				//Island("remove",Solution::remove)
 				
 		};
 

@@ -55,7 +55,9 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 			analyze(i);
 		}
 
-		
+		/*std::cerr << std::endl;
+		printTransition(std::cerr);
+		std::cerr << std::endl;	 */
 
 		f << oss.str();
 		++cpt;
@@ -81,6 +83,13 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 	{
 		if (not _islands.at(i).empty())
 		{
+			std::cout << "island #" << i << std::endl;
+			for (const Solution& s : _islands.at(i))
+			{
+				s.printSeq();
+			}
+			std::cout  << std::endl;
+
 			if (_islands.at(i).getBestSol().getObjectiveValue() > bestSol->getObjectiveValue())
 			{
 				delete bestSol;
@@ -113,35 +122,32 @@ void Solver::migrationPool(std::map <size_t, std::vector<Solution> > & migrants,
 	{
 		// choice with transition matrix
 		
-		double randNum((double)rand() / (double)RAND_MAX);
+		/*double randNum((double)rand() / (double)RAND_MAX);
 	
 		size_t n(_islands.size());
 		size_t destination(i);
-		double cumulProb(_M.at(i).at(0));
-		for (size_t j(1); j < n; ++j)
-		{
-			if ((i!=j) && (randNum < cumulProb))
+		double cumulProb(0.0);
+		for (size_t j(0); j < n; ++j)
+		{	
+			cumulProb += _M.at(i).at(j);
+			if (randNum < cumulProb)
 			{
-				destination = j-1;
+				destination = j;
 				break;
 			}
-			else
-			{
-				cumulProb += _M.at(i).at(j);
-			}
 		} 
-
-		  /*
-		    static std::random_device srd;
+		   */
+		  
+		   static std::random_device srd;
 		   static std::mt19937 smt(srd());
 		   smt.seed(161295);
 		   
-		   */
-		//std::discrete_distribution<> d(_M.at(i).begin(), _M.at(i).end());
+		
+		std::discrete_distribution<> d(_M.at(i).begin(), _M.at(i).end());
 
 		// i : (M[i][0],..., M[i][n])
 
-		//size_t destination(d(srd));
+		size_t destination(d(srd));
 
 		if (destination != i)
 		{
@@ -270,7 +276,7 @@ void Solver::update(size_t island)
 	for (size_t k(0); k < n; ++k)
 	{
 
-		std::vector <size_t> B(utils::argmax(_D[island]));
+		std::vector <size_t> B(utils::argmax(_D.at(island)));
 		
 
 		if (utils::belongs(B, k))

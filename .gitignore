@@ -338,3 +338,12 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/doe2
+/doe1
+/doe/optExp
+/benchmarkValid
+/doe3
+*.out
+*.sol
+*.dat
+*.py

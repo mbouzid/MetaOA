@@ -56,12 +56,50 @@ class Island: public std::vector <Solution>
 		void populateRandomly(OrderData * d, size_t nb)
 		{
 			size_t cpt(0);
+
+			
 			while (cpt < nb)
 			{
-				push_back(Solution::genRandom(_id, d));//push_back(Solution::genEmpty(_id,d));
-				//push_back(Solution::genGreedy(_id, d));
-				//push_back(Solution::genEmpty(_id, d));
-				++cpt;
+				//push_back(Solution::genRandom(_id, d));//push_back(Solution::genEmpty(_id,d));
+				
+				double randNum((double)rand() / (double)RAND_MAX);
+				if (randNum < 0.20)
+				{ 
+					
+					double otherRandNum((double)rand() / (double)RAND_MAX);
+					if (otherRandNum < 0.5)
+					{
+						Solution sol(Solution::genGreedy2(_id, d));
+					//	std::cout << sol << std::endl;
+						
+						Island::const_iterator found(std::find(begin(), end(), sol));
+						if (found == end())
+						{
+							push_back(sol);
+							++cpt;
+						}
+					}
+					else
+					{
+						Solution sol(Solution::genGreedy3(_id, d));
+						//std::cout << sol << std::endl;
+						Island::const_iterator found(std::find(begin(), end(), sol));
+						if (found == end())
+						{
+							push_back(sol);
+							++cpt;
+						}
+					}
+				}
+				else 
+				{ 	
+					
+					Solution sol(Solution::genRandom(_id, d));
+					//std::cout << sol << std::endl;
+					push_back(sol);
+					++cpt;
+				}	  
+				
 			}
 		}
 

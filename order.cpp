@@ -92,8 +92,9 @@ OrderData* OrderData::load(const char* datname)
 	std::ifstream f(datname);
 	std::string line;
 
-	size_t n(0), m(0), h(0);
+	size_t n(0), m(0), h(0), T(0);
 	double Tax(0.0);
+	std::map<uint16_t, std::map<size_t, double>> ff;
 	uint16_t* r = nullptr, * p = nullptr, * d = nullptr, * db = nullptr, * e = nullptr, * Omega =nullptr , **s = nullptr , *g =nullptr, *b = nullptr;
 	double* w =nullptr, *q =nullptr, * EC =nullptr;
 
@@ -165,6 +166,17 @@ OrderData* OrderData::load(const char* datname)
 					{
 						db[i] = atoi(tokens.at(i).c_str());
 					}
+
+					size_t imax(0);
+					for (size_t i(1); i <= n; ++i)
+					{
+						if (db[i] > db[imax])
+						{
+							imax = i;
+						}
+					}
+
+					T = db[imax] + 1;
 
 					break;
 				}
@@ -328,5 +340,23 @@ OrderData* OrderData::load(const char* datname)
 
 	f.close();
 
-	return new OrderData(n,r,p,d,db,e,Omega,s,m,h,b,g,w,EC,q,Tax);
+	// float f[j in 1..n][t in 0..T] = (t>=r[j])&&(t<=db[j])?(e[j] - w[j]*maxl(t-d[j],0) ):0;
+	for (uint16_t j(1); j <= n; ++j)
+	{
+		ff.emplace(j, std::map<size_t, double>());
+		for (size_t t(0); t <= T; ++t)
+		{
+			if (t >= r[j] and t <= db[j])
+			{
+				ff[j].emplace(t, e[j] - w[j] * std::max(t - d[j], (unsigned long long) 0));
+			}
+			else
+			{
+
+				ff[j].emplace(t, 0);
+			}
+		}
+	}
+
+	return new OrderData(n,r,p,d,db,e,Omega,s,m,h,b,g,w,EC,q,Tax,T,ff);
 }
