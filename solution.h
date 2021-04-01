@@ -34,8 +34,8 @@ class Solution
 			_C(_seq.getN()+1,0),
 			_ST(_seq.getN() + 1,0),
 			_objVal(0.0),
-			_profit(),
-			_tardiness()
+			_profit(_seq.getN() + 1, 0),
+			_tardiness(_seq.getN() + 1, 0)
 		{
 			// at creation : update Completion times and objective
 			updateCompletionTimes(d);
@@ -140,6 +140,17 @@ class Solution
 			return _C.at(i);
 		}
 
+		const std::vector<uint16_t>& getCompletionTimes() const
+		{
+			return _C;
+		}
+
+		const std::vector<uint16_t>& getStartingTimes() const
+		{
+			return _ST;
+		}
+
+
 		// completion time of order i
 		uint16_t getStartingTime(uint16_t i) const
 		{
@@ -184,6 +195,8 @@ class Solution
 
 		static void ATI(Solution& sol, OrderData* dat);
 
+		static void testMut(Solution& sol, OrderData* dat);
+
 		
 		// recombinaison 
 		static Solution singlePointCrossover(const Solution& p1, const Solution& p2, OrderData* dat);
@@ -217,6 +230,7 @@ class Solution
 		// J-schedule
 		static Solution genGreedy2(size_t origin, OrderData* dat);
 		static Solution genGreedy3(size_t origin, OrderData* dat);
+		static Solution genGreedy4(size_t origin, OrderData* dat);
 
 		bool operator == (const Solution& sol) const
 		{
@@ -308,7 +322,24 @@ class Solution
 			return seq;
 		}
 
+		uint16_t getMakespan() const
+		{
+			uint16_t lastProcOrder(_seq.at(_seq.size() - 1));
+			return _C.at(lastProcOrder);
+		}
 
+		void deleteOrder(uint16_t i, OrderData * dat)
+		{
+			_seq.deleteOrder(i);
+		
+			updateCompletionTimes(dat);
+			computeObjective(dat);
+		}
+
+		static size_t bp(int ** distM, const Solution& s1, const Solution& s2)
+		{
+			return Sequence::bp(distM, s1._seq, s2._seq);
+		}
 
 };
 

@@ -3,6 +3,7 @@
 #include <chrono>
 #include <algorithm>
 #include <sstream>
+#include <charconv>
 
 
 std::ostream& operator<<(std::ostream& os, const Sequence& rhs)
@@ -105,7 +106,8 @@ void Sequence::append(uint16_t i)
 		if (not inSequence(i))
 		{
 			_seq.push_back(i);
-			setAccepted(i);
+			setAccepted(i,true);
+
 		}
 	}
 	else
@@ -126,10 +128,9 @@ void Sequence::insertOrderAt(size_t k, uint16_t i)
 void Sequence::deleteOrder(uint16_t i)
 {
 	if (inSequence(i))
-	{
-		removeOrder(i);
-
+	{	
 		setAccepted(i, false);
+		removeOrder(i);
 	}
 
 }
@@ -141,6 +142,9 @@ void Sequence::swap(uint16_t i, uint16_t j)
 		std::vector<uint16_t>::iterator it_i(std::find(_seq.begin(), _seq.end(), i));
 		std::vector<uint16_t>::iterator it_j(std::find(_seq.begin(), _seq.end(), j));
 		std::iter_swap(it_i, it_j);
+
+
+
 	}
 }
 
@@ -238,7 +242,8 @@ uint16_t Sequence::getRandomOrderInSequence(Sequence & rhs)
 		return 0;
 
 	size_t pos(rand() % rhs._seq.size());
-	return rhs._seq[pos];
+	
+	return rhs._seq.at(pos) ;
 }
 
 size_t Sequence::getRandomPosInSequence() const

@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <exception>
+#include <string>
 #include "order.h"
 
 class Sequence 
@@ -16,6 +17,7 @@ class Sequence
 		
 		// accepted 
 		std::vector<bool> _accepted;
+
 
  		// insert order i at pos k 
 		std::vector<uint16_t>::iterator insertAt(size_t k, uint16_t i) ;
@@ -41,14 +43,17 @@ class Sequence
 			_n(n),
 			_seq(),
 			_accepted(n,false)
-		{}
+		{
+		}
 
 
 		Sequence(const Sequence& rhs) :
 			_n(rhs._n),
 			_seq(rhs._seq),
 			_accepted(rhs._accepted)
-		{}
+		{
+		
+		}
 
 		Sequence& operator = (const Sequence& rhs)
 		{
@@ -192,6 +197,53 @@ class Sequence
 			return sum / (double)_n;
 		}
 
+		std::string getStr() const
+		{
+			std::string str("");
+			for (size_t k(0); k < _n; ++k)
+			{
+				if (_accepted.at(k))
+				{
+					str += std::to_string(k);
+				}
+				else
+				{
+					str += "0";
+				}
+			}
+			return str;
+		}
+
+
+
+		static size_t bp(int** & distM, const Sequence& s1, const Sequence& s2)
+		{
+			for (size_t i(0); i < s1.size()-1; ++i)
+			{
+				distM[s1.at(i)][s1.at(i+1)] = 1;
+				
+			}
+
+			size_t cpt(0);
+			for (size_t i(0); i < s2.size()-1 ; ++i)
+			{
+				if (distM[s2.at(i)][s2.at(i+1)] != 1)
+				{
+					cpt += 1;
+				}
+				
+			}
+
+			for (size_t i(0); i < s1.size()-1; ++i)
+			{
+				distM[s1.at(i)][s1.at(i+1)] = 0;
+				
+			}
+
+
+		
+			return cpt;
+		}
 
 };
 

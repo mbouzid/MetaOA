@@ -16,6 +16,9 @@ class Solver
 
 		OrderData* _dat;
 
+		// dist matrix
+		int** _dist;
+
 		// islands
 		std::vector <Island> _islands;
 
@@ -26,6 +29,7 @@ class Solver
 		double _beta;
 
 		// data matrix that evaluates the improvement obtained by individuals of island i when they are processed on island j.
+
 		std::vector <std::vector<double>> _D;
 		
 		// migration matrix
@@ -42,12 +46,14 @@ class Solver
 		Solver
 		(
 			OrderData* dat,
+			int ** dist,
 			const std::vector<Island>& islands,
 			size_t popsize,
 			double alpha = 0.8,
 			double beta = 0.01
 		) :
 			_dat(dat),
+			_dist(dist),
 			_islands(islands),
 			_alpha(alpha),
 			_beta(beta),

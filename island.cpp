@@ -132,7 +132,7 @@ std::pair<Solution, Solution> Island::select() const
 	return std::make_pair(at(select1),at(select2));
 }
 
-void Island::replace(OrderData* dat, double pm, double dr)
+void Island::replace(OrderData* dat, int** dist, double pm, double dr)
 {
 	std::pair <Solution, Solution> parents(select());
 
@@ -145,7 +145,7 @@ void Island::replace(OrderData* dat, double pm, double dr)
 	size_t nbChilds(dr * nbIndiv);
 	for (size_t k(0); k < nbChilds+reste; ++k)
 	{
-		std::pair<Solution,Solution> child(std::make_pair(Solution::testCrossover(parents.first, parents.second, dat), Solution::singlePointCrossover(parents.second, parents.first, dat)));
+		std::pair<Solution,Solution> child(std::make_pair(Solution::testCrossover(parents.first, parents.second, dat), Solution::testCrossover(parents.second, parents.first, dat)));
 
 		// choisir enfant
 		double randNum1((double)rand() / (double)RAND_MAX);
@@ -169,16 +169,15 @@ void Island::replace(OrderData* dat, double pm, double dr)
 				_operator(children, dat);
 				
 			}
-			
-			push_back(children);
+
+				push_back(children);
+
 		}
 
 		
 		
 	}
-
-	// sort pop by worst sol
-	std::sort(begin(), end(), [](const Solution& s1, const Solution& s2) { return s1.getObjectiveValue() <= s2.getObjectiveValue(); });
+	 std::sort(begin(), end(), [](const Solution& s1, const Solution& s2) { return s1.getObjectiveValue() <= s2.getObjectiveValue(); });
 
 	Island::iterator it(begin());
 	while (it != end() )
@@ -186,7 +185,7 @@ void Island::replace(OrderData* dat, double pm, double dr)
 		Island::iterator next(std::next(it));
 		while (next != end())
 		{
-			if ( (*it).getObjectiveValue() == (*next).getObjectiveValue())
+			if ( Solution::bp(dist,*it,*next) <= 2/* (*it).getObjectiveValue() == (*next).getObjectiveValue()*/ )
 			{
 				next = erase(next);
 
@@ -214,10 +213,20 @@ void Island::replace(OrderData* dat, double pm, double dr)
 			}
 		}
 	}
+	else if (szAfter < nbIndiv)
+	{
+		size_t nbDiff(nbIndiv - szAfter);
+		for (size_t k(0); k < nbDiff; ++k)
+		{
+			push_back(Solution::genRandom(_id, dat));
+			//push_back(Solution::genGreedy4(_id, dat));
+		}
+
+	}
 
 }
 
 std::ostream& operator<<(std::ostream& os, const Island& island)
 {
-	return os <<island.size(); /* << ","  << island.getMaxFitness(); /*; << "," << island.getAvgFitness();	*/
+	return os   <<island.size();/*<< "," <<  island.getMaxFitness();*/ /*; << "," << island.getAvgFitness();	*/
 }

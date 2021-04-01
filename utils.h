@@ -6,6 +6,7 @@
 
 namespace utils
 {  
+
 	enum OptionsParams
 	{
 		Invalid,
@@ -28,6 +29,8 @@ namespace utils
 	};
 
 
+	int hammingDist(const std::string& str1, const std::string& str2);
+	size_t levenshtein_distance(int ** dist, const std::string& str1, const std::string& str2);
 
 	std::vector <std::string> tokenize(const std::string& str, const std::string & delims);
 

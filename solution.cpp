@@ -7,6 +7,8 @@ void Solution::updateCompletionTimes(OrderData* d)
 {
 	if (_seq.getSeq().empty())
 	{
+		
+		std::cout << "empty" << std::endl;
 		size_t n(_seq.getN());
 		for (size_t k(0); k < n; ++k)
 		{
@@ -17,6 +19,8 @@ void Solution::updateCompletionTimes(OrderData* d)
 		return;
 	}
 
+
+
 	std::vector<uint16_t> rejected;
 
 	uint16_t prev(0);
@@ -24,10 +28,6 @@ void Solution::updateCompletionTimes(OrderData* d)
 	{
 		uint16_t i(_seq.at(k)); // get kth order  to be processed
 		
-								
-		// add random number to starting time?
-		
-		// a quel moment commencer sans rejeter ?
 		// slack = _C[prev] - d->getDb()[prev]- d->getP()[prev] + 1;
 		
 		// if completion time of previous job is before release, update C[k] to its release date 
@@ -48,7 +48,7 @@ void Solution::updateCompletionTimes(OrderData* d)
 		if (_C.at(i) > d->getDb(i))
 		{
 			_C[i] = 0;
-			_ST[i] = 0;
+			_ST[i] = 0;	
 			rejected.push_back(i);
 
 		}
@@ -81,16 +81,18 @@ void Solution::computeObjective(OrderData* d)
 
 	
 	size_t n(_seq.size());
+	size_t N(_seq.getN());
+
 
 	for (size_t k(0); k < n; ++k)
 	{
-		_profit.push_back(0.0);
-		_tardiness.push_back(0.0);
+		_profit[k] = 0.0;
+		_tardiness[k] = 0.0;
 	}
 	
 	uint16_t prev(0); 
 
-	for (size_t k(0); k < n; ++k)
+	for (size_t k(0); k < n ; ++k)
 	{
 		uint16_t i(_seq.at(k));	// kth order
 
@@ -151,6 +153,10 @@ void Solution::inversion(Solution& sol, OrderData* dat)
 {
 	size_t pos1(sol._seq.getRandomPosInSequence()), pos2(sol._seq.getRandomPosInSequence());
 
+	while (pos1 == pos2)
+	{
+		pos2 = sol._seq.getRandomPosInSequence();
+	}
 
 	// pos1 < pos2
 	size_t tmp(0);
@@ -407,8 +413,51 @@ void Solution::change(Solution& sol, OrderData* dat)
 
 void Solution::ATI(Solution& sol, OrderData* dat)
 {
+	size_t cpt(0);
+	std::vector<uint16_t> subsequence; 
+	size_t pos(sol._seq.getRandomPosInSequence());
+	subsequence.push_back(sol.getSequence().at(pos));
+	
+	size_t nb(std::min(sol._seq.size(), pos + 4)-pos);
+	for (size_t p(pos+1); p < std::min(pos+4,sol.getSequence().size()) ; ++p)
+	{
+		subsequence.push_back(sol.getSequence().at(p));
+	}
+
+	std::vector<uint16_t> bestpermut(ATI::solve(&sol, subsequence, dat));
 
 
+	size_t k(0);
+	for (size_t p(pos); p < pos + nb; ++p)
+	{
+		sol._seq[p] = bestpermut.at(k);
+		++k;
+	}
+
+
+	update(sol, dat);
+	
+}
+
+void Solution::testMut(Solution& sol, OrderData* dat)
+{	
+	std::vector<uint16_t> rejected(sol._seq.getRejectedOrders());
+
+	std::vector<uint16_t> accept;
+	for (size_t k(0); k < 4; ++k)
+	{
+		uint16_t i(Sequence::getRandomOrderInSequence(sol._seq));
+		accept.push_back(i);
+		sol._seq.deleteOrder(i);
+	}
+
+	for (uint16_t r : rejected)
+	{
+		size_t pos(sol._seq.getRandomPosInSequence());
+		sol._seq.insertOrderAt(pos, r);
+	}
+	
+	update(sol, dat);
 
 }
 
@@ -434,10 +483,7 @@ Solution Solution::singlePointCrossover(const Solution& p1, const Solution& p2, 
 		child.append(p2.getOrderAt(k));
 	}
 	
-	Solution childsol(p1.getOrigin(),child, dat);
-	update(childsol, dat);
-
-	return childsol;
+	return Solution(p1.getOrigin(), child, dat);
 }
 
 
@@ -472,7 +518,9 @@ Solution Solution::testCrossover(const Solution& p1, const Solution& p2, OrderDa
 			}
 			else
 			{
-				childseq.append(p1.getOrderAt(k));
+			
+					childseq.append(p1.getOrderAt(k));
+
 			}
 		}
 
@@ -498,16 +546,15 @@ Solution Solution::testCrossover(const Solution& p1, const Solution& p2, OrderDa
 			}
 			else
 			{
-				childseq.append(p2.getOrderAt(k));
+				
+					childseq.append(p2.getOrderAt(k));
+
 			}
 		}
 	}
 
 
-	Solution child(p1.getCurrentOrigin(), childseq, dat);
-	update(child, dat);
-
-	return child;
+	return Solution(p1.getCurrentOrigin(), childseq, dat);
 }
 
 Solution Solution::testCrossover1(const Solution& p1, const Solution& p2, OrderData* dat)
@@ -570,10 +617,7 @@ Solution Solution::testCrossover1(const Solution& p1, const Solution& p2, OrderD
 	}
 
 
-	Solution child(p1.getCurrentOrigin(), childseq, dat);
-	update(child, dat);
-
-	return child;
+	return Solution(p1.getCurrentOrigin(), childseq, dat);
 }
 
 
@@ -583,9 +627,7 @@ Solution Solution::genRandom(size_t origin, OrderData* dat, double pAccepted)
 	Sequence s(dat->getN());
 	s.genRandom(1.0);
 
-	Solution sol(origin, s, dat);
-	update(sol, dat);
-	return sol;
+	return Solution(origin, s, dat);
 }
 
 Solution Solution::genEmpty(size_t origin, OrderData* dat)
@@ -605,8 +647,6 @@ double Solution::getBestSolFrom(const std::vector<Solution>& sols)
 		objs.push_back(s.getObjectiveValue());
 	}
 
-
-
 	return *std::max_element(objs.begin(),objs.end());
 }
 
@@ -624,21 +664,16 @@ Solution Solution::genGreedy1(size_t origin, OrderData* dat)
 		orders.push_back(i);
 	}
 
-	
-	std::sort(orders.begin(), orders.end(), [&dat](const uint16_t& i, const uint16_t& j) { return dat->getR(i)<= dat->getR(j); });
+	std::sort(orders.begin(), orders.end(), [&dat](const uint16_t& i, const uint16_t& j) { return dat->getR(i) <= dat->getR(j); });
 
 
-	uint16_t t(0);
-	uint16_t prev(0);
 	for (uint16_t i : orders)
 	{
 		s.append(i);
-		prev = i;
 	}
 
 
-
-	return Solution(origin, s, dat);
+	return Solution(origin,s,dat);
 }
 
 Solution Solution::genGreedy2(size_t origin, OrderData* dat)
@@ -702,11 +737,7 @@ Solution Solution::genGreedy2(size_t origin, OrderData* dat)
 				; });
 		
 		
-		//std::cout << *it << std::endl;
 		size_t i(0);
-		//std::cout << i << std::endl;
-
-		//std::cout << crit.at(i) << std::endl;
 		uint16_t k(crit.at(i));
 
 		if ( t <= dat->getDb(k) )
@@ -722,62 +753,12 @@ Solution Solution::genGreedy2(size_t origin, OrderData* dat)
 			L.erase(std::find(L.begin(), L.end(), k));
 			
 		}
-		//std::cout << L.at(i) << std::endl;
 		
 
 	}
 
-	/*std::vector<uint16_t> U;
-
-	for (uint16_t i(1); i <= dat->getN(); ++i)
-	{
-		U.push_back(i);
-	}
-
-	std::sort(U.begin(), U.end(), [&dat](const uint16_t& i, const uint16_t& j) { return dat->getR(i) <= dat->getR(j); });
-
-	uint16_t t(dat->getR(*U.begin()));
-	uint16_t prev(0);
-	while (not U.empty())
-	{
-		
-		// r_j <= t
-		std::vector<uint16_t>::iterator j(std::find_if(U.begin(), U.end(), [&dat, &t](const uint16_t& i) { return dat->getR(i) <= t; }));
-		
-		std::vector<uint16_t>::iterator i(j);	  
-		
-		if (j != U.end())
-		{
-			uint16_t dmax(dat->getD(*i));
-			++j;
-
-			// max d_j
-			while (j != U.end())
-			{
-
-				if (dat->getD(*j) < dmax)
-				{
-					i = j;
-				}
-				++j;
-			}
-
-			//std::cout << "i=" << *i << std::endl;
-			t += dat->getP(*i) + dat->getS(prev, *i);
-
-			s.append(*i);
-			prev = *i;
-			U.erase(i);
-		}
-		else
-			break;
-	}
-
-	*/
-	Solution sol(origin, s, dat);
-	//sol.updateCompletionTimes(dat);
-
-	return sol;
+	
+	return Solution(origin, s, dat);
 }
 
 Solution Solution::genGreedy3(size_t origin, OrderData* dat)
@@ -796,26 +777,126 @@ Solution Solution::genGreedy3(size_t origin, OrderData* dat)
 
 	for (uint16_t i : orders)
 	{
-		//std::cout << i << std::endl;
 		s.append(i);
 	}
 
-	Solution sol(origin,s, dat);
+	return Solution(origin, s, dat);
+}
 
-	update(sol, dat);
-	return sol;
+Solution Solution::genGreedy4(size_t origin, OrderData* dat)
+{
+	Sequence s(dat->getN());
+
+	std::vector<uint16_t> orders;
+	for (uint16_t i(1); i <= dat->getN(); ++i)
+	{
+		orders.push_back(i);
+	}
+
+	// ATCS rule
+	uint16_t t(0);
+	size_t l(0);
+
+	std::vector<uint16_t> sq;
+	while (not orders.empty())
+	{
+
+		std::map <uint16_t,double> ATCS;
+
+		for (uint16_t i : orders)
+		{
+			ATCS.emplace(i, 0.0);
+		}
+
+
+		double pavg(0);
+		for (uint16_t i : orders)
+		{
+			pavg += dat->getP(i);
+		}
+		pavg = pavg / (double)orders.size();
+
+		double savg(0.0);
+		for (uint16_t i : orders)
+		{
+			for (uint16_t j : orders)
+			{
+				savg += dat->getS(i, j);
+			}
+
+		}
+		savg = savg / (orders.size()*orders.size());
+
+
+
+
+
+		for (uint16_t i : orders)
+		{
+
+			double term1( ((double)dat->getW(i) / (double)dat->getP(i)));
+
+			double term2(-(double)std::max((uint16_t)(dat->getD(i) - dat->getP(i) - t), /*dat->getR(i)*/(uint16_t)0) / (0.9 * pavg));
+			double term3(-((double)dat->getS(l, i) / (0.9 * savg)));
+
+
+			double t1(std::exp(term2)), t2(std::exp(term3));
+			
+			ATCS[i] = (term1)*t1 * t2;
+
+
+
+			std::sort(orders.begin(), orders.end(), [&ATCS](const uint16_t& i, const uint16_t& j)
+				{
+					return ATCS.at(i) >= ATCS.at(j);
+				});
+			
+
+		}
+
+
+		std::vector<double> atcs;
+		for (uint16_t i : orders)
+		{
+			atcs.push_back(ATCS.at(i));
+		}
+
+		/*std::discrete_distribution<> d(atcs.begin(), atcs.end());
+
+
+		static std::random_device srd;
+		static std::mt19937 smt(srd());
+		smt.seed(161295);
+
+		
+		uint16_t i(orders.at(d(smt)));	*/
+		uint16_t i(orders.at(0));
+		t = std::max(t, dat->getR(l)) + dat->getP(l) + dat->getS(l, i);
+		l = i;
+		sq.push_back(l);
+		
+		
+		orders.erase(std::find(orders.begin(),orders.end(),l));
+
+
+	}
+
+
+	for (uint16_t i : sq)
+	{
+		s.append(i);
+	}
+
+	return Solution(origin, s, dat);
 }
 
 Solution Solution::genGreedy(size_t origin, OrderData* dat)
 {
-	//RLR1_i = ei / (pi + saverage, i),
-	//where saverage_i =(s0, i + s1, i + y + sn, i) / (n + 1).
-	//double* RLR = (double*)calloc(dat->getN() + 1, sizeof(double));
+
 	std::vector <double> RLR(dat->getN()+1,0.0);
 	Sequence s(dat->getN());
 
-	uint16_t t(0);
-
+	
 	std::vector<uint16_t> orders;
 
 	for (uint16_t i(1); i <= dat->getN(); ++i)
@@ -824,37 +905,24 @@ Solution Solution::genGreedy(size_t origin, OrderData* dat)
 	}
 
 	std::sort(orders.begin(), orders.end(), [&dat](const uint16_t& i, const uint16_t& j) { return dat->getDb(i) <=dat->getDb(j); });
-
+	
+	uint16_t t(0);
+	uint16_t prev(0);
 	for (uint16_t i : orders)
 	{
-
-		// compute revenue load ratio
-		/*double savg_i(0.0);
-
-		for (size_t j(0); j <= dat->getN(); ++j)
-		{
-			savg_i += dat->getS(j, i);
-		}
-
-		savg_i = savg_i / double(dat->getN() + 1);
-
-
-		RLR[i] = dat->getE(i) / (dat->getP(i) + savg_i); */  
-
-		
+		t = std::max(t, dat->getR(i));
 		if (t <= dat->getDb(i))	
+		{	
+			
 			s.append(i);  
-		
-		t += dat->getP(i);
+			t += dat->getS(prev,i) + dat->getP(i);
+			prev = i;
+		}
 		
 	}
-		// sort sequence by increasing RLR
-	//std::sort(s.begin(), s.end(), [&RLR](const uint16_t& i, const uint16_t& j) { return RLR.at(i) <= RLR.at(j); });
 
 	
-
-
-	return Solution(origin, s, dat);  
+	return Solution(origin, s, dat);
 
 }
 

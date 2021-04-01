@@ -348,7 +348,8 @@ OrderData* OrderData::load(const char* datname)
 		{
 			if (t >= r[j] and t <= db[j])
 			{
-				ff[j].emplace(t, e[j] - w[j] * std::max(t - d[j], (unsigned long long) 0));
+				
+				ff[j].emplace(t, e[j] - w[j] * std::max((uint16_t)t - d[j],  0));
 			}
 			else
 			{

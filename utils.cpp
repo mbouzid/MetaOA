@@ -4,6 +4,38 @@
 #include <numeric>
 
 
+int utils::hammingDist(const std::string & str1, const std::string & str2)
+{
+	return str1.compare(str2);
+}
+
+size_t utils::levenshtein_distance(int** dist, const std::string& str1, const std::string& str2)
+{
+
+	for (size_t i = 1, im = 0; i < str2.size(); ++i, ++im)
+	{
+		for (size_t j = 1, jn = 0; j < str1.size(); ++j, ++jn)
+		{
+			if (str1.at(jn) == str2.at(im))
+			{
+					dist[i][j] = dist[i - 1][j - 1];
+			}
+			else
+			{
+				dist[i][j] = std::min(dist[i - 1][j] + 1, /* A deletion. */
+					std::min(dist[i][j - 1] + 1, /* An insertion. */
+							dist[i - 1][j - 1] + 1)); /* A substitution. */
+			}
+		}
+	}
+
+		size_t r = dist[str1.size()-1][str2.size() - 1];
+
+
+		return r;
+}
+
+
 std::vector<std::string> utils::tokenize(const std::string& str, const std::string & delims)
 {
 
@@ -118,7 +150,7 @@ std::vector<size_t> utils::argmax(std::vector<double> D_i)
 	size_t n(D_i.size());
 	for(size_t i(0); i < n;++i)
 	{
-		if (D_i.at(i) == maxElt)
+		if (D_i.at(i) >= maxElt)
 			argMax.push_back(i);
 	}
 	return argMax;

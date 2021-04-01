@@ -47,6 +47,12 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 			update(i);
 		}
 
+		for (size_t i(0); i < n; ++i)
+		{
+			utils::normalize(_M[i]);
+			
+		}
+
 		migrationPolicy();
 
 	
@@ -58,6 +64,18 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 		/*std::cerr << std::endl;
 		printTransition(std::cerr);
 		std::cerr << std::endl;	 */
+
+		/*for (size_t i(0); i < n; ++i)
+		{
+			for (size_t j(0); j < n; ++j)
+			{
+				std::cout << _D.at(i).at(j) << " ";
+			}
+			std::cout << std::endl;
+		}
+
+		std::cout << std::endl;	 */
+
 
 		f << oss.str();
 		++cpt;
@@ -103,6 +121,7 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 	{
 		std::cout << *bestSol << std::endl;
 		std::cout << "objVal=" << bestSol->getObjectiveValue() << std::endl;
+		bestSol->printSeq();
 
 		delete bestSol;
 	}
@@ -238,7 +257,7 @@ void Solver::replacePop(double dr)
 	{
 		if (_islands.at(i).size() > 1)
 		{
-			_islands[i].replace(_dat, dr);
+			_islands[i].replace(_dat,_dist, dr);
 		}
 	}
 
@@ -248,7 +267,7 @@ void Solver::replacePop(size_t island, double pm, double dr)
 {
 	if (_islands.at(island).size() > 1)
 	{
-		_islands[island].replace(_dat, pm, dr);
+		_islands[island].replace(_dat,_dist, pm, dr);
 	}
 }
 
@@ -281,7 +300,9 @@ void Solver::update(size_t island)
 
 		if (utils::belongs(B, k))
 		{	
+
 		
+
 			R[k] = (double)1 / (double)B.size(); 
 		}
 		else
@@ -308,10 +329,10 @@ void Solver::update(size_t island)
 
 	}
 
-	for (size_t j(0); j < n; ++j)
+	/*for (size_t j(0); j < n; ++j)
 	{ 
 		utils::normalize(_M[j]);
-	}
+	}*/
 
 }
 
@@ -332,12 +353,18 @@ void Solver::analyze(size_t i)
 			
 		for (size_t k(0); k < n; ++k)
 		{  
-			//std::cout << "k=" << k << std::endl;
+			//
 			// check if origin of sol s in island i is island k 
 				if (s.getOrigin()==k)
 				{
-					fit[k].push_back(s.getObjectiveValue());
-					//fit[k].push_back(s.getServiceLevel()+s.getAcceptanceRate());
+					
+					double md((double)s.getMakespan() /(double) _dat->getT());
+				
+					double accrate(s.getAcceptanceRate() );
+
+					double srvlvl(s.getServiceLevel());
+
+					fit[k].push_back(/*accrate+srvlvl*/ s.getObjectiveValue());
 				}
 			}
 
@@ -353,8 +380,6 @@ void Solver::analyze(size_t i)
 			_D[k][i] = *std::max_element(fit.at(i).cbegin(), fit.at(i).cend());
 		}
 	}
-
-
 
 }
 

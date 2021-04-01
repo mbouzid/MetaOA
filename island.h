@@ -69,7 +69,7 @@ class Island: public std::vector <Solution>
 					double otherRandNum((double)rand() / (double)RAND_MAX);
 					if (otherRandNum < 0.5)
 					{
-						Solution sol(Solution::genGreedy2(_id, d));
+						Solution sol(Solution::genGreedy4(_id, d));
 					//	std::cout << sol << std::endl;
 						
 						Island::const_iterator found(std::find(begin(), end(), sol));
@@ -152,7 +152,7 @@ class Island: public std::vector <Solution>
 
 
 		// replace dr percent of the worst population with child
-		void replace(OrderData * dat, double pm, double dr = 0.5);
+		void replace(OrderData * dat, int** dist, double pm, double dr = 0.5);
 
 		~Island()
 		{}
