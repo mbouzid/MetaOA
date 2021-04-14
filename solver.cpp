@@ -27,6 +27,7 @@ void Solver::run(size_t nbIter, double pm, double pc, double dr, const char* out
 
 		oss << cpt;
 
+		//#pragma omp parallel num_threads(8)
 		for (int i(0); i < n; ++i)
 		{
 			if (not _islands.at(i).empty())
